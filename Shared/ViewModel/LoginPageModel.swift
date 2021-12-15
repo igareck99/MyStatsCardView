@@ -11,11 +11,14 @@ class LoginPageModel: ObservableObject {
     @Published var registerUser: Bool = false
     @Published var re_Enter_Password: String = ""
     @Published var showReEnterPassword: Bool = false
+    @AppStorage("log_Status") var log_Status: Bool = false
     
     // MARK: - Internal Methods
     
     func Login() {
-        // Do Action Here...
+        withAnimation{
+            log_Status = true
+        }
     }
     
     func Register() {
@@ -26,3 +29,4 @@ class LoginPageModel: ObservableObject {
         // Do Action Here...
     }
 }
+
