@@ -1,28 +1,27 @@
 import SwiftUI
 
-// MARK: - MainPage
-
 struct MainPage: View {
-    
-    // MARK: - Internal Properties
-
     @State var currentTab: Tab = .Home
+    @StateObject var sharedData: SharedDataModel = SharedDataModel()
+    @Namespace var animation
+    
     init(){
         UITabBar.appearance().isHidden = true
     }
-    
-    // MARK: - Body
-
     var body: some View {
-        VStack(spacing: 0){
+        
+        VStack(spacing: 0) {
             TabView(selection: $currentTab) {
-                Home()
+                Home(animation: animation)
+                    .environmentObject(sharedData)
                     .tag(Tab.Home)
-                Text("Liked")
+                LikedPage()
+                    .environmentObject(sharedData)
                     .tag(Tab.Liked)
-                Text("Profile")
+                ProfilePage()
                     .tag(Tab.Profile)
-                Text("Cart")
+                CartPage()
+                    .environmentObject(sharedData)
                     .tag(Tab.Cart)
             }
             HStack(spacing: 0){
@@ -42,6 +41,7 @@ struct MainPage: View {
                                     .blur(radius: 5)
                                     .padding(-7)
                                     .opacity(currentTab == tab ? 1 : 0)
+                                
                             )
                             .frame(maxWidth: .infinity)
                             .foregroundColor(currentTab == tab ? Color("Purple") : Color.black.opacity(0.3))
@@ -52,18 +52,23 @@ struct MainPage: View {
             .padding(.bottom,10)
         }
         .background(Color("HomeBG").ignoresSafeArea())
+        .overlay(
+            ZStack {
+                if let product = sharedData.detailProduct,sharedData.showDetailProduct {
+                    ProductDetailView(product: product, animation: animation)
+                        .environmentObject(sharedData)
+                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .opacity))
+                }
+            }
+        )
     }
 }
-
-// MARK: - MainPage_Previews
 
 struct MainPage_Previews: PreviewProvider {
     static var previews: some View {
         MainPage()
     }
 }
-
-// MARK: - Tab
 
 enum Tab: String,CaseIterable{
     
